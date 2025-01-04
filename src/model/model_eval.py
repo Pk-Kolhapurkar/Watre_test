@@ -104,8 +104,8 @@ def save_metrics(metrics: dict, metrics_path: str) -> None:
 def main():
     try:
         test_data_path = "./data/processed/test_processed.csv"
-        model_path = "/workspaces/Watre_test/mlops_project/models/model.pkl"
-        metrics_path = "/workspaces/Watre_test/mlops_project/reports/metrics.json"
+        model_path = "/workspaces/Watre_test/models/model.pkl"
+        metrics_path = "/workspaces/Watre_test/reports/metrics.json"
         model_name = "Best Model"
 
         test_data = load_data(test_data_path)
@@ -130,7 +130,7 @@ def main():
 
             #Save run ID and model info to JSON File
             run_info = {'run_id': run.info.run_id, 'model_name': "Best Model"}
-            reports_path = "/workspaces/Watre_test/mlops_project/reports/run_info.json"
+            reports_path = "/workspaces/Watre_test/reports/run_info.json"
             with open(reports_path, 'w') as file:
                 json.dump(run_info, file, indent=4)
 

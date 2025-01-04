@@ -15,7 +15,7 @@ mlflow.set_experiment("Final_model")  # Name of the experiment in MLflow
 mlflow.set_tracking_uri("https://dagshub.com/prathamesh.khade20/Watre_test.mlflow")
 
 # Load the run ID and model name from the saved JSON file
-reports_path = "/workspaces/Watre_test/mlops_project/reports/run_info.json"
+reports_path = "/workspaces/Watre_test/reports/run_info.json"
 with open(reports_path, 'r') as file:
     run_info = json.load(file)
 
