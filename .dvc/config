@@ -1,0 +1,3 @@
+['remote "origin"']
+    url = s3://prathamesh.khade20/Watre_test
+    endpointurl = https://dagshub.com/prathamesh.khade20/Watre_test.s3

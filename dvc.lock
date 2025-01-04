@@ -1,0 +1,87 @@
+schema: '2.0'
+stages:
+  data_collection:
+    cmd: python /workspaces/Watre_test/mlops_project/src/data/data_collection.py
+    deps:
+    - path: mlops_project/src/data/data_collection.py
+      hash: md5
+      md5: ceb81ed28204eaf5c2b0b91cc539fbdc
+      size: 1949
+    params:
+      params.yaml:
+        data_collection.test_size: 0.2
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 6943e655800134f51910892c621c7b98.dir
+      size: 518984
+      nfiles: 2
+  pre_preprocessing:
+    cmd: python /workspaces/Watre_test/mlops_project/src/data/data_prep.py
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 6943e655800134f51910892c621c7b98.dir
+      size: 518984
+      nfiles: 2
+    - path: mlops_project/src/data/data_prep.py
+      hash: md5
+      md5: 395046431d9a8af14336c4159b727c36
+      size: 1797
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: 74c1d1d8cd67f1dc9154360eb2636b52.dir
+      size: 543617
+      nfiles: 2
+  model_building:
+    cmd: python /workspaces/Watre_test/mlops_project/src/model/model_building.py
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 74c1d1d8cd67f1dc9154360eb2636b52.dir
+      size: 543617
+      nfiles: 2
+    - path: mlops_project/src/model/model_building.py
+      hash: md5
+      md5: 1ef31066d30f39dc6beab6ca4c901cdd
+      size: 2001
+    params:
+      params.yaml:
+        model_building.n_estimators: 1000
+    outs:
+    - path: mlops_project/models/model.pkl
+      hash: md5
+      md5: 56d24363d3e6a0bf17e716ad4e1840b6
+      size: 73621062
+  model_eval:
+    cmd: python /workspaces/Watre_test/mlops_project/src/model/model_eval.py
+    deps:
+    - path: mlops_project/models/model.pkl
+      hash: md5
+      md5: 56d24363d3e6a0bf17e716ad4e1840b6
+      size: 73621062
+    - path: mlops_project/src/model/model_eval.py
+      hash: md5
+      md5: 4d1850057f2cef12a19c9dd1d78dfcdc
+      size: 4892
+    outs:
+    - path: mlops_project/reports/metrics.json
+      hash: md5
+      md5: 11b7205ba0bb0ae50d957a73a3331099
+      size: 137
+    - path: mlops_project/reports/run_info.json
+      hash: md5
+      md5: 6a0c6c0cfcf8870e0b91c3dc1720cac7
+      size: 84
+  model_registration:
+    cmd: python /workspaces/Watre_test/mlops_project/src/model/model_reg.py
+    deps:
+    - path: mlops_project/reports/run_info.json
+      hash: md5
+      md5: 6a0c6c0cfcf8870e0b91c3dc1720cac7
+      size: 84
+    - path: mlops_project/src/model/model_reg.py
+      hash: md5
+      md5: 6abd3cfee7f82f259495bd01b59bdd55
+      size: 2330
