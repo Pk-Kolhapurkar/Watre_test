@@ -1,43 +1,43 @@
 stages:
   data_collection:
-    cmd: python /workspaces/Watre_test/mlops_project/src/data/data_collection.py
+    cmd: python /workspaces/Watre_test/src/data/data_collection.py
     deps:
-      - /workspaces/Watre_test/mlops_project/src/data/data_collection.py
+      - /workspaces/Watre_test/src/data/data_collection.py
     params:
       - data_collection.test_size
     outs:
       - /workspaces/Watre_test/data/raw
 
   pre_preprocessing:
-    cmd: python /workspaces/Watre_test/mlops_project/src/data/data_prep.py
+    cmd: python /workspaces/Watre_test/src/data/data_prep.py
     deps:
       - /workspaces/Watre_test/data/raw
-      - /workspaces/Watre_test/mlops_project/src/data/data_prep.py
+      - /workspaces/Watre_test/src/data/data_prep.py
     outs:
       - /workspaces/Watre_test/data/processed
 
   model_building:
-    cmd: python /workspaces/Watre_test/mlops_project/src/model/model_building.py
+    cmd: python /workspaces/Watre_test/src/model/model_building.py
     deps:
       - /workspaces/Watre_test/data/processed
-      - /workspaces/Watre_test/mlops_project/src/model/model_building.py
+      - /workspaces/Watre_test/src/model/model_building.py
     params:
       - model_building.n_estimators
     outs:
-      - /workspaces/Watre_test/mlops_project/models/model.pkl
+      - /workspaces/Watre_test/models/model.pkl
 
   model_eval:
-    cmd: python /workspaces/Watre_test/mlops_project/src/model/model_eval.py
+    cmd: python /workspaces/Watre_test/src/model/model_eval.py
     deps:
-      - /workspaces/Watre_test/mlops_project/models/model.pkl
-      - /workspaces/Watre_test/mlops_project/src/model/model_eval.py
+      - /workspaces/Watre_test/models/model.pkl
+      - /workspaces/Watre_test/src/model/model_eval.py
     metrics:
-      - /workspaces/Watre_test/mlops_project/reports/metrics.json
+      - /workspaces/Watre_test/reports/metrics.json
     outs:
-      - /workspaces/Watre_test/mlops_project/reports/run_info.json
+      - /workspaces/Watre_test/reports/run_info.json
 
   model_registration:
-    cmd: python /workspaces/Watre_test/mlops_project/src/model/model_reg.py
+    cmd: python /workspaces/Watre_test/src/model/model_reg.py
     deps:
-      - /workspaces/Watre_test/mlops_project/reports/run_info.json
-      - /workspaces/Watre_test/mlops_project/src/model/model_reg.py
+      - /workspaces/Watre_test/reports/run_info.json
+      - /workspaces/Watre_test/src/model/model_reg.py
