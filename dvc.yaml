@@ -1,43 +1,43 @@
 stages:
   data_collection:
-    cmd: python src/data/data_collection.py
+    cmd: python /workspaces/Watre_test/src/data/data_collection.py
     deps:
-      - src/data/data_collection.py
+      - /workspaces/Watre_test/src/data/data_collection.py
     params:
       - data_collection.test_size
     outs:
-      - data/raw
+      - /workspaces/Watre_test/data/raw
 
   pre_preprocessing:
-    cmd: python src/data/data_prep.py
+    cmd: python /workspaces/Watre_test/src/data/data_prep.py
     deps:
-      - data/raw
-      - src/data/data_prep.py
+      - /workspaces/Watre_test/data/raw
+      - /workspaces/Watre_test/src/data/data_prep.py
     outs:
-      - data/processed
+      - /workspaces/Watre_test/data/processed
 
   model_building:
-    cmd: python src/model/model_building.py
+    cmd: python /workspaces/Watre_test/src/model/model_building.py
     deps:
-      - data/processed
-      - src/model/model_building.py
+      - /workspaces/Watre_test/data/processed
+      - /workspaces/Watre_test/src/model/model_building.py
     params:
       - model_building.n_estimators
     outs:
-      - models/model.pkl
+      - /workspaces/Watre_test/models/model.pkl
 
   model_eval:
-    cmd: python src/model/model_eval.py
+    cmd: python /workspaces/Watre_test/src/model/model_eval.py
     deps:
-      - models/model.pkl
-      - src/model/model_eval.py
+      - /workspaces/Watre_test/models/model.pkl
+      - /workspaces/Watre_test/src/model/model_eval.py
     metrics:
-      - reports/metrics.json
+      - /workspaces/Watre_test/reports/metrics.json
     outs:
-      - reports/run_info.json
+      - /workspaces/Watre_test/reports/run_info.json
 
   model_registration:
-    cmd: src/model/model_reg.py
+    cmd: python /workspaces/Watre_test/src/model/model_reg.py
     deps:
-      - reports/run_info.json
-      - src/model/model_reg.py
+      - /workspaces/Watre_test/reports/run_info.json
+      - /workspaces/Watre_test/src/model/model_reg.py
