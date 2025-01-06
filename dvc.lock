@@ -52,15 +52,15 @@ stages:
     outs:
     - path: models/model.pkl
       hash: md5
-      md5: 68a23a8a674920a07b03817749e30a48
-      size: 73533702
+      md5: cda738924772b51840b688e5b9fc96d3
+      size: 73646822
   model_eval:
     cmd: python /workspaces/Watre_test/src/model/model_eval.py
     deps:
     - path: models/model.pkl
       hash: md5
-      md5: 68a23a8a674920a07b03817749e30a48
-      size: 73533702
+      md5: cda738924772b51840b688e5b9fc96d3
+      size: 73646822
     - path: src/model/model_eval.py
       hash: md5
       md5: c9aeed4677acb4107294d0d2bb01475c
@@ -68,18 +68,18 @@ stages:
     outs:
     - path: reports/metrics.json
       hash: md5
-      md5: e8902360e821e9defce0f7c59e156f61
-      size: 145
+      md5: f614191f86c772ffcb98b17dcf0ee212
+      size: 137
     - path: reports/run_info.json
       hash: md5
-      md5: 917b2d2932b7de13c0b7f497e9ba4946
+      md5: e232467199873af92f29ac9edf699cc4
       size: 84
   model_registration:
     cmd: python /workspaces/Watre_test/src/model/model_reg.py
     deps:
     - path: reports/run_info.json
       hash: md5
-      md5: 917b2d2932b7de13c0b7f497e9ba4946
+      md5: e232467199873af92f29ac9edf699cc4
       size: 84
     - path: src/model/model_reg.py
       hash: md5
