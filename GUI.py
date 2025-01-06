@@ -1,121 +1,121 @@
 import mlflow
 import pandas as pd
-import tkinter as tk
-from tkinter import messagebox
-import threading
+import streamlit as st
 
 # Set the tracking URI to your DagsHub MLflow instance
-
 mlflow.set_tracking_uri("https://dagshub.com/prathamesh.khade20/Watre_test.mlflow")  # URL to track the experiment
-   
 
 # Specify the model name
 model_name = "Best Model"  # Registered model name
 
-class PredictionApp(tk.Tk):
-    def _init_(self):
-        super()._init_()
+# Default values for the input fields
+default_values = {
+    'ph': 3.71608,
+    'Hardness': 204.89045,
+    'Solids': 20791.318981,
+    'Chloramines': 7.300212,
+    'Sulfate': 368.516441,
+    'Conductivity': 564.308654,
+    'Organic_carbon': 10.379783,
+    'Trihalomethanes': 86.99097,
+    'Turbidity': 2.963135
+}
 
-        # Set up the window
-        self.title("Water Quality Prediction")
-        self.geometry("400x500")
-        self.configure(bg="#eaeaea")
+# Load the model
+def load_model():
+    try:
+        # Create an MlflowClient to interact with the MLflow server
+        client = mlflow.tracking.MlflowClient()
+        # Get the latest version of the model in the Production stage
+        versions = client.get_latest_versions(model_name)
 
-        # Create a frame for inputs
-        self.input_frame = tk.Frame(self, bg="#ffffff", padx=20, pady=20)
-        self.input_frame.pack(pady=20)
+        if versions:
+            latest_version = versions[0].version
+            run_id = versions[0].run_id  # Fetching the run ID from the latest version
 
-        # Add a title label
-        title_label = tk.Label(self.input_frame, text="Water Quality Prediction", font=("Helvetica", 16, "bold"), bg="#ffffff")
-        title_label.grid(row=0, column=0, columnspan=2, pady=10)
-
-        # Create input fields using grid layout
-        self.create_input_fields()
-
-        # Create a button to make predictions
-        self.predict_button = tk.Button(self, text="Predict", command=self.run_prediction_thread, bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
-        self.predict_button.pack(pady=20)
-
-        # Load the model once at the start
-        self.loaded_model = self.load_model()
-
-    def create_input_fields(self):
-        # Define input labels and create entry fields
-        self.inputs = {}
-        labels = ['pH', 'Hardness', 'Solids', 'Chloramines', 'Sulfate', 'Conductivity', 'Organic_carbon', 'Trihalomethanes', 'Turbidity']
-        
-        for idx, label in enumerate(labels):
-            lbl = tk.Label(self.input_frame, text=label, bg="#ffffff", font=("Helvetica", 12))
-            lbl.grid(row=idx + 1, column=0, sticky="e", pady=5)
-
-            entry = tk.Entry(self.input_frame, width=25, font=("Helvetica", 12))
-            entry.grid(row=idx + 1, column=1, pady=5)
-            self.inputs[label] = entry
-
-    def load_model(self):
-        try:
-            # Create an MlflowClient to interact with the MLflow server
-            client = mlflow.tracking.MlflowClient()
-            # Get the latest version of the model in the Production stage
-            versions = client.get_latest_versions(model_name, stages=["Production"])
-
-            if versions:
-                latest_version = versions[0].version
-                run_id = versions[0].run_id  # Fetching the run ID from the latest version
-
-                # Construct the logged_model string
-                logged_model = f'runs:/{run_id}/{model_name}'
-                # Load the model
-                loaded_model = mlflow.pyfunc.load_model(logged_model)
-                print(f"Model loaded from {logged_model}")  # Debug message
-                return loaded_model
-            else:
-                messagebox.showerror("Error", "No model found in the 'Production' stage.")
-                return None
-        except Exception as e:
-            messagebox.showerror("Error", f"Error loading model: {e}")
+            # Construct the logged_model string
+            logged_model = f'runs:/{run_id}/{model_name}'
+            # Load the model
+            loaded_model = mlflow.pyfunc.load_model(logged_model)
+            st.write(f"Model loaded from {logged_model}")  # Debug message
+            return loaded_model
+        else:
+            st.error("No model found in the 'Production' stage.")
             return None
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
 
-    def run_prediction_thread(self):
-        """Run prediction in a separate thread to keep the GUI responsive."""
-        thread = threading.Thread(target=self.make_prediction)
-        thread.start()
+# Function to validate input data
+def validate_input(input_value, field_name):
+    try:
+        return float(input_value)
+    except ValueError:
+        st.error(f"Invalid input for {field_name}. Please enter a numeric value.")
+        return None
 
-    def make_prediction(self):
-        try:
-            # Collect input data
-            input_data = {
-                'ph': [float(self.inputs['pH'].get())],
-                'Hardness': [float(self.inputs['Hardness'].get())],
-                'Solids': [float(self.inputs['Solids'].get())],
-                'Chloramines': [float(self.inputs['Chloramines'].get())],
-                'Sulfate': [float(self.inputs['Sulfate'].get())],
-                'Conductivity': [float(self.inputs['Conductivity'].get())],
-                'Organic_carbon': [float(self.inputs['Organic_carbon'].get())],
-                'Trihalomethanes': [float(self.inputs['Trihalomethanes'].get())],
-                'Turbidity': [float(self.inputs['Turbidity'].get())]
-            }
+# Function to make predictions
+def make_prediction(model):
+    try:
+        # Validate and collect input data from Streamlit form
+        input_data = {
+            'ph': [validate_input(st.session_state.pH, "pH") or default_values['ph']],
+            'Hardness': [validate_input(st.session_state.Hardness, "Hardness") or default_values['Hardness']],
+            'Solids': [validate_input(st.session_state.Solids, "Solids") or default_values['Solids']],
+            'Chloramines': [validate_input(st.session_state.Chloramines, "Chloramines") or default_values['Chloramines']],
+            'Sulfate': [validate_input(st.session_state.Sulfate, "Sulfate") or default_values['Sulfate']],
+            'Conductivity': [validate_input(st.session_state.Conductivity, "Conductivity") or default_values['Conductivity']],
+            'Organic_carbon': [validate_input(st.session_state.Organic_carbon, "Organic_carbon") or default_values['Organic_carbon']],
+            'Trihalomethanes': [validate_input(st.session_state.Trihalomethanes, "Trihalomethanes") or default_values['Trihalomethanes']],
+            'Turbidity': [validate_input(st.session_state.Turbidity, "Turbidity") or default_values['Turbidity']]
+        }
 
-            # Convert input data to DataFrame
-            data = pd.DataFrame(input_data)
+        # Check if any input is invalid
+        if None in input_data.values():
+            return  # Do not proceed with prediction if any input is invalid
 
-            if self.loaded_model is not None:
-                # Make prediction
-                prediction = self.loaded_model.predict(data)
+        # Convert input data to DataFrame
+        data = pd.DataFrame(input_data)
 
-                # Determine if the water is potable or not based on prediction
-                if prediction[0] == 1:  # Assuming 1 indicates potable
-                    messagebox.showinfo("Prediction Result", "Water is potable.")
-                else:  # Assuming 0 indicates not potable
-                    messagebox.showinfo("Prediction Result", "Water is not potable.")
-                print(f"Prediction result: {prediction[0]}")  # Debug message
-            else:
-                messagebox.showerror("Error", "Model not loaded.")
-        except Exception as e:
-            messagebox.showerror("Error", "Error during prediction.")
-            print(f"Error during prediction: {e}")  # Debug message
+        if model is not None:
+            # Make prediction
+            prediction = model.predict(data)
 
-# Run the application
-if _name_ == "_main_":
-    app = PredictionApp()
-    app.mainloop()
+            # Display prediction result
+            if prediction[0] == 1:  # Assuming 1 indicates potable
+                st.success("Water is potable.")
+            else:  # Assuming 0 indicates not potable
+                st.error("Water is not potable.")
+            st.write(f"Prediction result: {prediction[0]}")  # Debug message
+        else:
+            st.error("Model not loaded.")
+    except Exception as e:
+        st.error(f"Error during prediction: {e}")
+        st.write(f"Error during prediction: {e}")  # Debug message
+
+# Main function to run Streamlit app
+def main():
+    st.title("Water Quality Prediction")
+
+    # Check if the model is already loaded, if not load it
+    if "model" not in st.session_state:
+        st.session_state.model = load_model()
+
+    # User inputs for water quality prediction with default values
+    st.text_input("pH", key="pH", value=default_values['ph'])
+    st.text_input("Hardness", key="Hardness", value=default_values['Hardness'])
+    st.text_input("Solids", key="Solids", value=default_values['Solids'])
+    st.text_input("Chloramines", key="Chloramines", value=default_values['Chloramines'])
+    st.text_input("Sulfate", key="Sulfate", value=default_values['Sulfate'])
+    st.text_input("Conductivity", key="Conductivity", value=default_values['Conductivity'])
+    st.text_input("Organic_carbon", key="Organic_carbon", value=default_values['Organic_carbon'])
+    st.text_input("Trihalomethanes", key="Trihalomethanes", value=default_values['Trihalomethanes'])
+    st.text_input("Turbidity", key="Turbidity", value=default_values['Turbidity'])
+
+    # Prediction button
+    if st.button("Predict"):
+        make_prediction(st.session_state.model)
+
+# Run Streamlit app
+if __name__ == "__main__":
+    main()
