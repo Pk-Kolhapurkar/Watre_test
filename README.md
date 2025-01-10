@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-# Watre_test
-Project
-=======
-mlops_project
-==============================
+
 
 Water_potability_prediction
 
@@ -55,8 +50,3 @@ Project Organization
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
-
---------
-
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
->>>>>>> 8c3db83 (Add experiment1-4)
